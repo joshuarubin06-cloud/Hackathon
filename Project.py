@@ -11,3 +11,5 @@ user_input = input("Enter a prompt: ")
 
 prompt = f'{user_input}'
 
+response = client.models.generate_content(model= "gemini-3-flash-preview", contents=prompt)
+
