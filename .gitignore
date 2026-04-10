@@ -1,1 +1,3 @@
+
+# added the .env file for git doesn't upload the api key
 .env
