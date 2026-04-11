@@ -1,18 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MGrowing Roots</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Human Body Health Map</title>
+
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    background: #f2f2f2;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 20px;
+}
+
+/* The BODY OUTLINE IMAGE */
+.body-wrapper {
+    position: relative;
+    width: 220px;
+}
+
+/* REAL SILHOUETTE (no shapes built manually) */
+.body-image {
+    width: 100%;
+    display: block;
+    filter: grayscale(100%) brightness(1.2);
+}
+
+/* OVERLAY ZONES */
+.zone {
+    position: absolute;
+    background: rgba(135, 206, 250, 0.3);
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* POSITIONED OVER BODY IMAGE */
+.head { top: 10px; left: 85px; width: 50px; height: 50px; border-radius: 50%; }
+.chest { top: 60px; left: 65px; width: 90px; height: 80px; border-radius: 20px; }
+.left-arm { top: 70px; left: 20px; width: 40px; height: 100px; border-radius: 20px; }
+.right-arm { top: 70px; right: 20px; width: 40px; height: 100px; border-radius: 20px; }
+.legs { top: 150px; left: 75px; width: 70px; height: 100px; border-radius: 20px; }
+
+/* COLORS */
+.healthy { background: rgba(144, 238, 144, 0.6); }
+.warning { background: rgba(255, 0, 0, 0.6); }
+.neutral { background: rgba(135, 206, 250, 0.3); }
+
+button {
+    margin-top: 15px;
+    padding: 10px;
+}
+</style>
 </head>
+
 <body>
 
-    <header>
-        <h1>Welcome to My Website</h1>
-    </header>
+<h2>Human Body Health Map (Real Outline)</h2>
 
-    <main>
-        <p>This is a basic HTML page.</p>
+<button onclick="loadData()">Load Status</button>
 
-        <textarea placeholder="What would you like help with?"></textarea>
-    </main>
+<div class="container">
+
+<!-- FRONT BODY -->
+<div class="body-wrapper">
+
+    <!-- REAL HUMAN SILHOUETTE IMAGE -->
+    <img class="body-image" src="https://i.imgur.com/8QfQZ5K.png" alt="human body">
+
+    <!-- OVERLAY ZONES -->
+    <div id="front_head" class="zone head neutral"></div>
+    <div id="front_chest" class="zone chest neutral"></div>
+    <div id="front_left_arm" class="zone left-arm neutral"></div>
+    <div id="front_right_arm" class="zone right-arm neutral"></div>
+    <div id="front_legs" class="zone legs neutral"></div>
+
+</div>
+
+<!-- BACK BODY -->
+<div class="body-wrapper">
+
+    <img class="body-image" src="https://i.imgur.com/3ZQZQ9Q.png" alt="back body">
+
+    <div id="back_head" class="zone head neutral"></div>
+    <div id="back_upper" class="zone chest neutral"></div>
+    <div id="back_left_arm" class="zone left-arm neutral"></div>
+    <div id="back_right_arm" class="zone right-arm neutral"></div>
+    <div id="back_legs" class="zone legs neutral"></div>
+
+</div>
+
+</div>
+
+<script>
+
+// Fake API simulation
+async function loadData() {
+    const data = await new Promise(resolve => {
+        setTimeout(() => {
+            resolve({
+                front_head: "healthy",
+                front_chest: "warning",
+                front_left_arm: "neutral",
+                front_right_arm: "healthy",
+                front_legs: "healthy",
+
+                back_head: "healthy",
+                back_upper: "warning",
+                back_left_arm: "healthy",
+                back_right_arm: "neutral",
+                back_legs: "healthy"
+            });
+        }, 1000);
+    });
+
+    applyColors(data);
+}
+
+// Apply colors to overlay zones
+function applyColors(data) {
+    for (let part in data) {
+        const el = document.getElementById(part);
+        if (!el) continue;
+
+        el.classList.remove("healthy", "warning", "neutral");
+        el.classList.add(data[part]);
+    }
+}
+
+</script>
+
+</body>
+</html>
