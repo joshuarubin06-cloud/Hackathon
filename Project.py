@@ -6,7 +6,7 @@ import pandas as pd
 load_dotenv()
 
 
-file_path = '/Users/fatahibrahim/Library/Mobile Documents/com~apple~CloudDocs/Hackathon/healthcare_real_time_dataset.csv'
+file_path = 'healthcare_real_time_dataset.csv'
 df = pd.read_csv(file_path)
 
 dataset_context = df.head(15).to_string()
