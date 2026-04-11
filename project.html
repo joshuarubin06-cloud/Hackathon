@@ -3,134 +3,222 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Human Body Health Map</title>
+<title>Human Health Indicator</title>
 
 <style>
 body {
     font-family: Arial;
     text-align: center;
-    background: #f2f2f2;
+    background: wheat;
 }
 
 .container {
     display: flex;
     justify-content: center;
-    gap: 40px;
     margin-top: 20px;
 }
 
-/* The BODY OUTLINE IMAGE */
-.body-wrapper {
-    position: relative;
-    width: 220px;
+svg {
+    width: 260px;
+    background: white;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
-/* REAL SILHOUETTE (no shapes built manually) */
-.body-image {
-    width: 100%;
-    display: block;
-    filter: grayscale(100%) brightness(1.2);
-}
-
-/* OVERLAY ZONES */
-.zone {
-    position: absolute;
-    background: rgba(135, 206, 250, 0.3);
+.part {
+    fill: rgba(135,206,250,0.5);
+    stroke: #333;
     cursor: pointer;
     transition: 0.3s;
 }
 
-/* POSITIONED OVER BODY IMAGE */
-.head { top: 10px; left: 85px; width: 50px; height: 50px; border-radius: 50%; }
-.chest { top: 60px; left: 65px; width: 90px; height: 80px; border-radius: 20px; }
-.left-arm { top: 70px; left: 20px; width: 40px; height: 100px; border-radius: 20px; }
-.right-arm { top: 70px; right: 20px; width: 40px; height: 100px; border-radius: 20px; }
-.legs { top: 150px; left: 75px; width: 70px; height: 100px; border-radius: 20px; }
+.neutral { fill: rgba(135,206,250,0.5); }
+.mild { fill: rgba(255,215,0,0.8); }
+.severe { fill: rgba(255,0,0,0.8); }
 
-/* COLORS */
-.healthy { background: rgba(144, 238, 144, 0.6); }
-.warning { background: rgba(255, 0, 0, 0.6); }
-.neutral { background: rgba(135, 206, 250, 0.3); }
+textarea {
+    width: 320px;
+    height: 100px;
+    margin-top: 20px;
+}
 
 button {
-    margin-top: 15px;
+    margin-top: 10px;
     padding: 10px;
+}
+
+#result {
+    margin-top: 20px;
 }
 </style>
 </head>
 
 <body>
 
-<h2>Human Body Health Map (Real Outline)</h2>
+<h1>Human Health Indicator</h1>
 
-<button onclick="loadData()">Load Status</button>
+<textarea id="input" placeholder="Describe symptoms..."></textarea><br>
+<button onclick="analyzeInput()">Analyze</button>
+
+<div id="result"></div>
 
 <div class="container">
 
-<!-- FRONT BODY -->
-<div class="body-wrapper">
+<svg viewBox="0 0 120 260">
 
-    <!-- REAL HUMAN SILHOUETTE IMAGE -->
-    <img class="body-image" src="https://i.imgur.com/8QfQZ5K.png" alt="human body">
+<!-- HEAD -->
+<circle id="head" class="part neutral" cx="60" cy="30" r="18"></circle>
+<circle id="nose" class="part neutral" cx="60" cy="35" r="4"></circle>
 
-    <!-- OVERLAY ZONES -->
-    <div id="front_head" class="zone head neutral"></div>
-    <div id="front_chest" class="zone chest neutral"></div>
-    <div id="front_left_arm" class="zone left-arm neutral"></div>
-    <div id="front_right_arm" class="zone right-arm neutral"></div>
-    <div id="front_legs" class="zone legs neutral"></div>
+<!-- TORSO -->
+<path id="chest" class="part neutral"
+d="M45 50 Q60 40 75 50 L80 120 Q60 140 40 120 Z"></path>
 
-</div>
+<!-- ARMS -->
+<path id="left_arm" class="part neutral"
+d="M40 60 L20 100 L30 110 L45 70 Z"></path>
 
-<!-- BACK BODY -->
-<div class="body-wrapper">
+<path id="right_arm" class="part neutral"
+d="M80 60 L100 100 L90 110 L75 70 Z"></path>
 
-    <img class="body-image" src="https://i.imgur.com/3ZQZQ9Q.png" alt="back body">
+<!-- LEGS -->
+<path id="left_leg" class="part neutral"
+d="M50 120 L45 200 L55 200 L60 120 Z"></path>
 
-    <div id="back_head" class="zone head neutral"></div>
-    <div id="back_upper" class="zone chest neutral"></div>
-    <div id="back_left_arm" class="zone left-arm neutral"></div>
-    <div id="back_right_arm" class="zone right-arm neutral"></div>
-    <div id="back_legs" class="zone legs neutral"></div>
+<path id="right_leg" class="part neutral"
+d="M60 120 L65 200 L75 200 L70 120 Z"></path>
 
-</div>
+</svg>
 
 </div>
 
 <script>
 
-// Fake API simulation
-async function loadData() {
-    const data = await new Promise(resolve => {
-        setTimeout(() => {
-            resolve({
-                front_head: "healthy",
-                front_chest: "warning",
-                front_left_arm: "neutral",
-                front_right_arm: "healthy",
-                front_legs: "healthy",
+// 🔑 API KEY PLACEHOLDER (for future AI integration)
+const API_KEY = "YOUR_API_KEY_HERE";
 
-                back_head: "healthy",
-                back_upper: "warning",
-                back_left_arm: "healthy",
-                back_right_arm: "neutral",
-                back_legs: "healthy"
-            });
-        }, 1000);
+// 🧠 Symptom database (expandable)
+const symptomDatabase = [
+    {
+        keywords: ["stuffy nose","runny nose","blocked nose","sinus"],
+        parts: ["nose"],
+        severity: "mild",
+        conditions: ["Common Cold","Allergies","Sinus Infection"]
+    },
+    {
+        keywords: ["headache","migraine","dizzy","lightheaded"],
+        parts: ["head"],
+        severity: "mild",
+        conditions: ["Migraine","Stress","Dehydration"]
+    },
+    {
+        keywords: ["severe headache","blurred vision"],
+        parts: ["head"],
+        severity: "severe",
+        conditions: ["Severe Migraine"]
+    },
+    {
+        keywords: ["cough","chest pain","tight chest","shortness of breath"],
+        parts: ["chest"],
+        severity: "severe",
+        conditions: ["Flu","Bronchitis","Respiratory Infection"]
+    },
+    {
+        keywords: ["arm pain","sore arm","numb arm"],
+        parts: ["left_arm","right_arm"],
+        severity: "mild",
+        conditions: ["Muscle Strain","Nerve Issue"]
+    },
+    {
+        keywords: ["leg pain","knee pain","sore leg","cramp"],
+        parts: ["left_leg","right_leg"],
+        severity: "mild",
+        conditions: ["Fatigue","Muscle Cramp"]
+    }
+];
+
+// 🔍 MAIN FUNCTION
+function analyzeInput() {
+    const text = document.getElementById("input").value.toLowerCase();
+
+    resetBody();
+
+    let detectedParts = {};
+    let conditions = new Set();
+
+    symptomDatabase.forEach(entry => {
+        entry.keywords.forEach(keyword => {
+            if (text.includes(keyword)) {
+
+                entry.parts.forEach(part => {
+                    detectedParts[part] = entry.severity;
+                });
+
+                entry.conditions.forEach(c => conditions.add(c));
+            }
+        });
     });
 
-    applyColors(data);
+    applyHighlights(detectedParts);
+    showResults(conditions);
+
+    // Optional AI call (disabled for now)
+    // callAI(text);
 }
 
-// Apply colors to overlay zones
-function applyColors(data) {
-    for (let part in data) {
-        const el = document.getElementById(part);
-        if (!el) continue;
+//  Reset
+function resetBody() {
+    document.querySelectorAll(".part").forEach(el => {
+        el.classList.remove("mild","severe");
+        el.classList.add("neutral");
+    });
+}
 
-        el.classList.remove("healthy", "warning", "neutral");
-        el.classList.add(data[part]);
+//  Highlight
+function applyHighlights(parts) {
+    for (let part in parts) {
+        const el = document.getElementById(part);
+        if (el) {
+            el.classList.remove("neutral");
+            el.classList.add(parts[part]);
+        }
     }
+}
+
+//  Results
+function showResults(conditions) {
+    document.getElementById("result").innerHTML =
+        "<b>Possible conditions:</b><br>" +
+        ([...conditions].join("<br>") || "No matches found") +
+        "<br><br><span style='color:red'>⚠️ Not a medical diagnosis</span>";
+}
+
+//  FUTURE AI FUNCTION
+async function callAI(userText) {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + API_KEY,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [
+                {
+                    role: "system",
+                    content: "Extract body parts and possible illnesses from symptoms."
+                },
+                {
+                    role: "user",
+                    content: userText
+                }
+            ]
+        })
+    });
+
+    const data = await response.json();
+    console.log("AI Response:", data);
 }
 
 </script>
