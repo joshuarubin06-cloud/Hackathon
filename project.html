@@ -331,7 +331,7 @@ async function analyzeInput() {
 
   // 3. Call your Flask backend
   try {
-    const res = await fetch("http://127.0.0.1:5000/api/diagnose", {
+    const res = await fetch("http://127.0.0.1:5001/api/diagnose", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ symptoms: text })
@@ -346,7 +346,7 @@ async function analyzeInput() {
     }
 
   } catch (err) {
-    showResult(conditions, null, "Could not reach the Flask server. Make sure it's running on port 5000.");
+    showResult(conditions, null, "Could not reach the Flask server. Make sure it's running on port 5001.");
   }
 
   btn.disabled = false;

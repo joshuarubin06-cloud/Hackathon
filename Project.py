@@ -90,6 +90,7 @@ def diagnose():
     return jsonify({"text": text})
 
 
-# ── Run ────────────────────────────────────────────────────────────────────:
-# debug=True is fine locally; turn it off before deploying
-app.run(host='127.0.0.1', port=5000, debug=False)
+# ── Run ────────────────────────────────────────────────────────────────────
+
+    # debug=True is fine locally; turn it off before deploying
+app.run(host='127.0.0.1', port=5001, debug=False)
